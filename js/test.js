@@ -36,19 +36,19 @@ describe('Test Reserva Horarios', () => {
 
         let horarioAReservar = horariosOriginal[1];
         restaurante.reservarHorario(horarioAReservar);
-        expect(horariosOriginal).that.does.not.include(horarioAReservar);
+        expect(restaurante.horarios).that.does.not.include(horarioAReservar);
     });
 
     it('Si el horario que se reserva no existe, el array se mantiene igual', () => {
 
         let horarioAReservar = "20:30";
         restaurante.reservarHorario(horarioAReservar);
-        expect(horariosOriginal).to.eql(horariosControl);
+        expect(restaurante.horarios).to.eql(horariosControl);
     });
 
     it('Intenta reservar un horario sin pasar un parametro en la funcion, el array se mantiene igual', () => {
         restaurante.reservarHorario();
-        expect(horariosOriginal).to.eql(horariosControl);
+        expect(restaurante.horarios).to.eql(horariosControl);
     });
 });
 
@@ -117,10 +117,89 @@ describe('Test Buscar Restaurante', () => {
         3- Buscar un String y nos devuelva el string: "No se ha encontrado ningún restaurant"
     */
 
+    let listaRestaurantes;
+
+    beforeEach(function () {
+        listaRestaurantes = mockListadoRestaurantes();
+    });
+
+    it('Buscar un ID existente (6) y nos devuelva el restaurante correcto', () => {
+        let resultadoEsperado = new Restaurant(6, "Green salad", "Ensalada", "Berlín", ["17:00", "19:00", "20:30"], "../img/ensalada2.jpg", [8, 3, 2, 1, 8, 7]);
+        let resultadoObtenido = listaRestaurantes.buscarRestaurante(6);
+        expect(resultadoObtenido).to.be.eql(resultadoEsperado);
+    });
+
+    it("Buscar un ID inexistente y nos devuelva el string: 'No se ha encontrado ningún restaurant'", () => {
+        let resultadoEsperado = "No se ha encontrado ningún restaurant";
+        let resultadoObtenido = listaRestaurantes.buscarRestaurante(89);
+        expect(resultadoObtenido).to.be.equal(resultadoEsperado);
+    });
+
+    it("Buscar un string y nos devuelva el string: 'No se ha encontrado ningún restaurant'", () => {
+        let resultadoEsperado = "No se ha encontrado ningún restaurant";
+        let resultadoObtenido = listaRestaurantes.buscarRestaurante('6');
+        expect(resultadoObtenido).to.be.equal(resultadoEsperado);
+    });
+});
+
+describe('Test Obtener Restaurantes', () => {
+    /*  1- Buscar restaurantes con rubro, ciudad y horario existente, debe retornar un restaurante valido.
+        2- Buscar restaurantes con rubro valido, ciudad valida y horario no valido. Debe retornar un array vacio.
+        3- Buscar restaurantes con rubro valido, ciudad no valida y horario valido. Debe retornar un array vacio.
+        4- Buscar restaurantes con rubro no valido, ciudad valida y horario valido. Debe retornar un array vacio.
+    */
+
+    beforeEach(function () {
+        listaRestaurantes = mockListadoRestaurantes();
+    });
+
+    it('Buscar restaurantes con rubro, ciudad y horario existente, debe retornar un array de length 1.', () => {
+        let resultadoObtenido = listaRestaurantes.obtenerRestaurantes("Ensalada", "Berlín", "20:30");
+        expect(resultadoObtenido).to.have.lengthOf(1);
+    });
+
+    it('Buscar restaurantes con rubro, ciudad y horario existente, debe retornar un restaurante valido.', () => {
+        let resultadoEsperado = new Restaurant(6, "Green salad", "Ensalada", "Berlín", ["17:00", "19:00", "20:30"], "../img/ensalada2.jpg", [8, 3, 2, 1, 8, 7]);
+        let resultadoObtenido = listaRestaurantes.obtenerRestaurantes("Ensalada", "Berlín", "20:30");
+        expect(resultadoObtenido[0]).to.be.eql(resultadoEsperado);
+    });
+
+    it('Buscar restaurantes con horario no valido. Debe retornar un array vacio.', () => {
+        let resultadoObtenido = listaRestaurantes.obtenerRestaurantes("Ensalada", "Berlín", "21:30");
+        expect(resultadoObtenido).to.have.lengthOf(0);
+    });
+
+    it('Buscar restaurantes con ciudad no valida. Debe retornar un array vacio.', () => {
+        let resultadoObtenido = listaRestaurantes.obtenerRestaurantes("Ensalada", "New York", "20:30");
+        expect(resultadoObtenido).to.have.lengthOf(0);
+    });
+
+    it('Buscar restaurantes con rubro no valido. Debe retornar un array vacio.', () => {
+        let resultadoObtenido = listaRestaurantes.obtenerRestaurantes("Asiatica", "Berlín", "20:30");
+        expect(resultadoObtenido).to.have.lengthOf(0);
+    });
+})
+
+describe('Test Reserva', () => {
+    let reserva2 = new Reserva(new Date(2018, 7, 27, 14, 100), 2, 150, "DES200")
+   
+    describe('Precio Base Reserva', () => {
 
 
-    beforeEach(function (params) {
+        it('Que un restaurante calcule correctamente su precio base', () => {
+            let resultadoObtenido = reserva2.precioBase();
+            resultadoEsperado = 300;
+            expect(resultadoObtenido).to.be.equal(resultadoEsperado);
+        });
+    })
 
+    describe('Precio Final Reserva', () => {
+
+        it('Que un restaurante calcule correctamente su precio final', () => {
+            let resultadoObtenido = reserva2.precioFinal();
+            resultadoEsperado = 100;
+            expect(resultadoObtenido).to.be.equal(resultadoEsperado);
+        })
     })
 })
 
